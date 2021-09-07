@@ -17,30 +17,55 @@ class App extends React.Component {
       lon: '',
       displayName: '',
       mapFlag: false,
-      displayErr: false
+      displayErr: false,
+      weather: false,
+      weatherArr: [],
+      displayWeatherError: false
 
     }
   }
 
 
+
+  weatherDataFunction = async (cityName) => {
+    let weatherUrl = `https://city-explorer-api-suhaib.herokuapp.com/?foundData=${cityName}`
+
+    try {
+      if (cityName === 'Amman' || cityName === 'Paris' || cityName === 'Seattle') {
+        let weatherData = await axios.get(weatherUrl)
+        this.setState({
+          weatherArr:weatherData.data,
+          weather: true
+        })
+      } else {
+        this.setState({
+          displayWeatherError: true
+        })
+      }
+    }
+    catch{
+      this.setState({
+        displayWeatherError: true
+      })
+    }
+  }
+
+
+
   locationHandler = async (event) => {
     event.preventDefault();
-    let locationName = event.target.locationName.value;
-    let myKey = 'pk.43fed3791d35ddb76aa14f749c6d3080';
-    let URL = `https://city-explorer-api-suhaib.herokuapp.com/?foundData=${locationName}`;
+    let cityName = event.target.cityName.value;
+    this.weatherDataFunction(cityName);
+    let myKey = process.env.REACT_APP_key;
+    let URL = `https://eu1.locationiq.com/v1/search.php?key=${myKey}&q=${cityName}&format=json`;
 
     try {
       let collectedData = await axios.get(URL);
       this.setState({
-        data1:collectedData.data[0],
-        data2:collectedData.data[1],
-        data3:collectedData.data[2],
-        data4:collectedData.data[3],
-        data5:collectedData.data[4],
-        data6:collectedData.data[5],
-        data7:collectedData.data[6],
-        data8:collectedData.data[7],
-        data9:collectedData.data[8],
+        lon: collectedData.data[0].lon,
+        lat: collectedData.data[0].lat,
+        display_name: collectedData.data[0].display_name,
+       
         // lat: collectedData.data[0].lat,
         // lon: collectedData.data[0].lon,
         // displayName: collectedData.data[0].display_name,
@@ -72,7 +97,7 @@ class App extends React.Component {
           <fieldset>
 
 
-            <input type='text' name='locationName' placeholder='Enter city name' />
+            <input type='text' name='cityName' placeholder='Enter city name' />
             <br />
             <Button style={{ marginTop: 20 }} type='submit'>Explore!</Button>
 
@@ -80,26 +105,25 @@ class App extends React.Component {
         </Form>
 
         <div style={{ float: 'left' }} >
-          <p>data1 : {this.state.data1}</p>
-          <p>data2 : {this.state.data2}</p>
-          <p>data3 : {this.state.data3}</p>
-          <p>data4 : {this.state.data4}</p>
-          <p>data5 : {this.state.data5}</p>
-          <p>data6 : {this.state.data6}</p>
-          <p>data7 : {this.state.data7}</p>
-          <p>data8 : {this.state.data8}</p>
-          <p>data9 : {this.state.data9}</p>
+          { this.state.weatherArr.map(item=>{
+            return(
+              <>
+              <p>Date: {item.date}</p>
+              <p>Desc: {item.description}</p>
+              </>
+            )
+          })}
 
-          {/* <p  style={{ padding: 20 }}> Display name : {this.state.displayName}</p>
+          <p  style={{ padding: 20 }}> Display name : {this.state.displayName}</p>
           <p style={{ padding: 20 }}>Lat : {this.state.lat}</p>
-          <p style={{ padding: 20 }}>Lon : {this.state.lon}</p> */}
+          <p style={{ padding: 20 }}>Lon : {this.state.lon}</p>
         </div>
 
         {/* "lat": "31.9515694",
         "lon": "35.9239625", */}
 
         {this.state.mapFlag &&
-          <Image style={{ float: 'right' }} style={{ marginRight: 40 }} src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center="31.9515694",$"35.9239625"&size=400x400`} alt='map' fluid />}
+          <Image style={{ float: 'right' }} style={{ marginRight: 40 }} src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_key}&center=${this.state.lat},${this.state.lon}&size=400x400`} alt='map' fluid />}
 
         {this.state.displayErr && <p>The server is not responding, try again !</p>}
       </>
