@@ -26,7 +26,7 @@ class App extends React.Component {
   locationHandler = async (event) => {
     event.preventDefault();
     let locationName = event.target.locationName.value;
-    // let myKey = 'pk.2859d110775b5becfbac71c3ce6fba2d';
+    let myKey = 'pk.43fed3791d35ddb76aa14f749c6d3080';
     let URL = `https://city-explorer-api-suhaib.herokuapp.com/?foundData=${locationName}`;
 
     try {
@@ -95,12 +95,13 @@ class App extends React.Component {
           <p style={{ padding: 20 }}>Lon : {this.state.lon}</p> */}
         </div>
 
+        {/* "lat": "31.9515694",
+        "lon": "35.9239625", */}
 
-{/* 
         {this.state.mapFlag &&
-          <Image style={{ float: 'right' }} style={{ marginRight: 40 }} src={`https://maps.locationiq.com/v3/staticmap?key=pk.2859d110775b5becfbac71c3ce6fba2d&center=${this.state.lat},${this.state.lon}&size=400x400`} alt='map' fluid />}
+          <Image style={{ float: 'right' }} style={{ marginRight: 40 }} src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center="31.9515694",$"35.9239625"&size=400x400`} alt='map' fluid />}
 
-        {this.state.displayErr && <p>The server is not responding, try again !</p>} */}
+        {this.state.displayErr && <p>The server is not responding, try again !</p>}
       </>
 
 
