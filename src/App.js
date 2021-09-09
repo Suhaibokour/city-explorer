@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import Image from 'react-bootstrap/Image'
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Image from 'react-bootstrap/Image';
+import Row from 'react-bootstrap/Row';
+import Movie from './components/movies';
 
 
 
@@ -20,28 +22,26 @@ class App extends React.Component {
       displayErr: false,
       weather: false,
       weatherArr: [],
-      displayWeatherError: false
+      displayWeatherError: false,
+      name:'',
+      movieData:[]
 
     }
   }
-
+//'https://backend-city.herokuapp.com/daily?movie=aqaba&key=50e57a92c64a49938e121a197570727a'
 
 
   weatherDataFunction = async (cityName) => {
-    let weatherUrl = `https://city-explorer-api-suhaib.herokuapp.com/?foundData=${cityName}`
+    let weatherUrl = `https://backend-city.herokuapp.com/daily?city=${cityName}`
 
     try {
-      if (cityName === 'Amman' || cityName === 'Paris' || cityName === 'Seattle') {
+     
         let weatherData = await axios.get(weatherUrl)
         this.setState({
           weatherArr:weatherData.data,
           weather: true
         })
-      } else {
-        this.setState({
-          displayWeatherError: true
-        })
-      }
+     
     }
     catch{
       this.setState({
@@ -65,7 +65,7 @@ class App extends React.Component {
         lon: collectedData.data[0].lon,
         lat: collectedData.data[0].lat,
         display_name: collectedData.data[0].display_name,
-       
+       name : cityName,
         // lat: collectedData.data[0].lat,
         // lon: collectedData.data[0].lon,
         // displayName: collectedData.data[0].display_name,
@@ -85,7 +85,21 @@ class App extends React.Component {
   }
 
 
+  getMovieData = async () => {
+    
 
+    const url = `https://backend-city.herokuapp.com/daily?movie=${this.state.name}`;
+    axios
+      .get(url)
+      .then(result => {
+        this.setState({
+          movieData: result.data,
+        })
+        console.log(this.state.movieData);
+      })
+      .catch(err => console.log(err))
+
+  }
 
 
 
@@ -114,7 +128,7 @@ class App extends React.Component {
             )
           })}
 
-          <p  style={{ padding: 20 }}> Display name : {this.state.displayName}</p>
+          
           <p style={{ padding: 20 }}>Lat : {this.state.lat}</p>
           <p style={{ padding: 20 }}>Lon : {this.state.lon}</p>
         </div>
@@ -126,6 +140,16 @@ class App extends React.Component {
           <Image style={{ float: 'right' }} style={{ marginRight: 40 }} src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_key}&center=${this.state.lat},${this.state.lon}&size=400x400`} alt='map' fluid />}
 
         {this.state.displayErr && <p>The server is not responding, try again !</p>}
+
+
+
+        <Row className="justify-content-between" >
+            
+              <Movie
+               movieData={this.state.movieData}
+              />
+
+          </Row>
       </>
 
 
