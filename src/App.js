@@ -56,6 +56,7 @@ class App extends React.Component {
     event.preventDefault();
     let cityName = event.target.cityName.value;
     this.weatherDataFunction(cityName);
+    this.geatMovieDat(cityName);
     let myKey = process.env.REACT_APP_key;
     let URL = `https://eu1.locationiq.com/v1/search.php?key=${myKey}&q=${cityName}&format=json`;
 
@@ -83,15 +84,17 @@ class App extends React.Component {
 
 
   }
+//https://backend-city.herokuapp.com/daily?city=irbid
 
-
-  getMovieData = async () => {
+  geatMovieDat = async (cityName) => {
+    // https://backend-city.herokuapp.com/movies?searchQuery=joker
+console.log(cityName);
+    const url = `https://backend-city.herokuapp.com/movies?searchQuery=${cityName}`;
     
-
-    const url = `https://backend-city.herokuapp.com/daily?movie=${this.state.name}`;
     axios
       .get(url)
       .then(result => {
+        console.log(result);
         this.setState({
           movieData: result.data,
         })
